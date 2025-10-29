@@ -9,3 +9,9 @@ export function getToken() {
 export function removeToken() {
   localStorage.removeItem('token');
 }
+
+// ✅ Add this new function
+export function logout() {
+  removeToken(); // clear stored token
+  window.location.href = '/login'; // redirect to login
+}

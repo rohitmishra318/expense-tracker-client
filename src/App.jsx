@@ -7,7 +7,7 @@ import Register from './pages/Register';
 import Tracker from './pages/Tracker';
 import Profile from './pages/Profile';
 import LentBorrow from './pages/LentBorrow';
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './components/ProtectedRoutes';
 import Dashboard from './pages/Dashboard';
 
 function App() {
