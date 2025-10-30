@@ -33,7 +33,12 @@ export default function LentBorrow() {
       try {
         if (!token) return;
         const data = await get(`${AUTH_API}/friends`, token);
-        setFriends(data || []);
+        if (data && data.error) {
+          console.error('Error fetching friends:', data.error);
+          setFriends([]);
+          return;
+        }
+        setFriends(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error('Error fetching friends:', err);
       }
@@ -48,15 +53,14 @@ export default function LentBorrow() {
       return;
     }
     try {
-      const res = await fetch(`${AUTH_API}/users/search?username=${encodeURIComponent(username)}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const users = await res.json();
-        setUserSuggestions(users || []);
-      } else {
+      // Use the shared `get` helper so non-JSON responses are handled consistently
+      const data = await get(`${AUTH_API}/users/search?username=${encodeURIComponent(username)}`, token);
+      if (data && data.error) {
+        console.error('Error searching users:', data.error);
         setUserSuggestions([]);
+        return;
       }
+      setUserSuggestions(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error searching users:', err);
       setUserSuggestions([]);
