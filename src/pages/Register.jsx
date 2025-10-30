@@ -1,5 +1,10 @@
+// src/pages/Register.jsx
+
 import { useState } from 'react';
-import { post, AUTH_API } from '../services/api'; // Using your original imports
+import { post, AUTH_API } from '../services/api';
+import { saveToken } from '../services/auth'; // 1. Import saveToken for consistency
+import { motion } from 'framer-motion';
+import { UserPlus, AlertCircle, CheckCircle } from 'lucide-react';
 
 export default function Register() {
   const [form, setForm] = useState({ username: '', email: '', password: '' });
@@ -20,12 +25,11 @@ export default function Register() {
     try {
       const result = await post(`${AUTH_API}/register`, form);
       
-      if (result.token) {
-        localStorage.setItem('token', result.token);
+      if (result.message && result.message.includes("successful")) { // Check for success message from backend
         setMessageType('success');
-        setMessage('Registration successful! Redirecting...');
-        // Add a redirect here, e.g.:
-        // setTimeout(() => window.location.href = '/dashboard', 1500);
+        setMessage('Registration successful! Please login.');
+        // Redirect to login after a short delay
+        setTimeout(() => (window.location.href = '/login'), 1500);
       } else {
         setMessage(result.error || 'Registration failed.');
       }
@@ -37,22 +41,29 @@ export default function Register() {
   };
 
   return (
-    // Full-screen container to center the login box
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4 py-12">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 md:p-10">
+    // 2. Full-screen container with dark mode background
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-zinc-900 px-4 py-12">
+      
+      {/* 3. Animated card with dark mode styling */}
+      <motion.div 
+        className="max-w-md w-full bg-white dark:bg-zinc-800 rounded-2xl shadow-xl dark:border dark:border-zinc-700 p-8 md:p-10"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center bg-indigo-100 rounded-full p-3 mb-4">
-            {/* User Plus Icon SVG */}
-            <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+          <div className="inline-flex items-center justify-center bg-indigo-100 dark:bg-indigo-900/50 rounded-full p-3 mb-4">
+            {/* 4. Replaced SVG with Lucide icon */}
+            <UserPlus className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
           </div>
-          <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
             Create your account
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-gray-600 dark:text-zinc-300">
             Or{' '}
-            <a href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <a href="/login" className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
               sign in to your account
             </a>
           </p>
@@ -63,7 +74,7 @@ export default function Register() {
           
           {/* Username Input */}
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-zinc-200">
               Username
             </label>
             <div className="mt-1 relative">
@@ -75,14 +86,15 @@ export default function Register() {
                 placeholder="your_username"
                 value={form.username} 
                 onChange={handleChange} 
-                className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
+                // 5. Styled input for dark mode
+                className="appearance-none block w-full px-4 py-3 border border-gray-300 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 sm:text-sm" 
               />
             </div>
           </div>
           
           {/* Email Input */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-zinc-200">
               Email address
             </label>
             <div className="mt-1 relative">
@@ -94,14 +106,14 @@ export default function Register() {
                 placeholder="you@example.com"
                 value={form.email} 
                 onChange={handleChange} 
-                className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
+                className="appearance-none block w-full px-4 py-3 border border-gray-300 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 sm:text-sm" 
               />
             </div>
           </div>
           
           {/* Password Input */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-zinc-200">
               Password
             </label>
             <div className="mt-1 relative">
@@ -113,7 +125,7 @@ export default function Register() {
                 placeholder="••••••••"
                 value={form.password} 
                 onChange={handleChange} 
-                className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
+                className="appearance-none block w-full px-4 py-3 border border-gray-300 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 sm:text-sm" 
               />
             </div>
           </div>
@@ -123,22 +135,26 @@ export default function Register() {
             <button 
               type="submit" 
               disabled={isLoading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400 disabled:cursor-not-allowed"
+              // 6. Styled button with icon and dark mode
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400 dark:disabled:bg-indigo-800 disabled:cursor-not-allowed transition"
             >
               {isLoading ? 'Creating account...' : 'Create Account'}
             </button>
           </div>
         </form>
         
-        {/* Message Area */}
+        {/* 7. Aesthetic Message Area */}
         {message && (
-          <div className="mt-6 text-center">
-            <p className={`text-sm ${messageType === 'error' ? 'text-red-600' : 'text-green-600'}`}>
-              {message}
-            </p>
+          <div className={`mt-6 flex items-center justify-center gap-2 text-sm ${
+            messageType === 'error' 
+            ? 'text-red-600 dark:text-red-400' 
+            : 'text-green-600 dark:text-green-400'
+          }`}>
+            {messageType === 'error' ? <AlertCircle size={18} /> : <CheckCircle size={18} />}
+            <span>{message}</span>
           </div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }
