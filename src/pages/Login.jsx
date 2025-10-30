@@ -5,6 +5,7 @@ import { post, AUTH_API } from '../services/api';
 import { saveToken } from '../services/auth';
 import { motion } from 'framer-motion'; // 1. Import motion
 import { Lock, LogIn, AlertCircle, CheckCircle } from 'lucide-react'; // 2. Import Lucide icons
+import Footer from './Footer';
 
 export default function Login() {
   const [form, setForm] = useState({ emailOrUsername: '', password: '' });
@@ -42,12 +43,13 @@ export default function Login() {
   };
 
   return (
-    // 3. Full-screen container with dark mode background
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-zinc-900 px-4 py-12">
+  // 3. Full-screen container with dark mode background
+  // Make column layout so Footer stacks below the sign-in card (prevents side-by-side layout)
+    <div className="flex flex-col items-center min-h-screen bg-[#18191B] px-4 py-12">
       
       {/* 4. Animated card with dark mode styling */}
       <motion.div 
-        className="max-w-md w-full bg-white dark:bg-zinc-800 rounded-2xl shadow-xl dark:border dark:border-zinc-700 p-8 md:p-10"
+        className="max-w-md w-full bg-[#1E1F22] rounded-2xl shadow-xl border border-zinc-800 p-8 md:p-10 mb-8"
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -55,16 +57,16 @@ export default function Login() {
         
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center bg-indigo-100 dark:bg-indigo-900/50 rounded-full p-3 mb-4">
-            {/* 5. Replaced SVG with Lucide icon */}
-            <Lock className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+            <div className="inline-flex items-center justify-center bg-indigo-900/50 rounded-full p-3 mb-4">
+              {/* 4. Replaced SVG with Lucide icon */}
+              <Lock className="w-8 h-8 text-indigo-400" />
           </div>
-          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+          <h2 className="text-3xl font-extrabold text-white tracking-tight">
             Sign in to your account
           </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-zinc-300">
+          <p className="mt-2 text-sm text-zinc-300">
             Or{' '}
-            <a href="/register" className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+            <a href="/register" className="font-medium text-indigo-400 hover:text-indigo-300">
               create a new account
             </a>
           </p>
@@ -75,7 +77,7 @@ export default function Login() {
           
           {/* Email/Username Input */}
           <div>
-            <label htmlFor="emailOrUsername" className="block text-sm font-medium text-gray-700 dark:text-zinc-200">
+            <label htmlFor="emailOrUsername" className="block text-sm font-medium text-zinc-200">
               Email or Username
             </label>
             <div className="mt-1 relative">
@@ -87,15 +89,14 @@ export default function Login() {
                 placeholder="you@example.com"
                 value={form.emailOrUsername} 
                 onChange={handleChange} 
-                // 6. Styled input for dark mode
-                className="appearance-none block w-full px-4 py-3 border border-gray-300 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 sm:text-sm" 
+                className="appearance-none block w-full px-4 py-3 border border-zinc-700 bg-zinc-800 text-white placeholder-zinc-400 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
               />
             </div>
           </div>
           
           {/* Password Input */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-zinc-200">
+            <label htmlFor="password" className="block text-sm font-medium text-zinc-200">
               Password
             </label>
             <div className="mt-1 relative">
@@ -107,8 +108,7 @@ export default function Login() {
                 placeholder="••••••••"
                 value={form.password} 
                 onChange={handleChange} 
-                // 6. Styled input for dark mode
-                className="appearance-none block w-full px-4 py-3 border border-gray-300 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 sm:text-sm" 
+                className="appearance-none block w-full px-4 py-3 border border-zinc-700 bg-zinc-800 text-white placeholder-zinc-400 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
               />
             </div>
           </div>
@@ -142,6 +142,7 @@ export default function Login() {
           </div>
         )}
       </motion.div>
+      <Footer />
     </div>
   );
 }

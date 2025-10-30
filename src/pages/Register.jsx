@@ -5,6 +5,7 @@ import { post, AUTH_API } from '../services/api';
 import { saveToken } from '../services/auth'; // 1. Import saveToken for consistency
 import { motion } from 'framer-motion';
 import { UserPlus, AlertCircle, CheckCircle } from 'lucide-react';
+import Footer from './Footer';
 
 export default function Register() {
   const [form, setForm] = useState({ username: '', email: '', password: '' });
@@ -42,11 +43,11 @@ export default function Register() {
 
   return (
     // 2. Full-screen container with dark mode background
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-zinc-900 px-4 py-12">
+    <div className="flex flex-col items-center min-h-screen bg-[#18191B] px-4 py-12">
       
       {/* 3. Animated card with dark mode styling */}
       <motion.div 
-        className="max-w-md w-full bg-white dark:bg-zinc-800 rounded-2xl shadow-xl dark:border dark:border-zinc-700 p-8 md:p-10"
+        className="max-w-md w-full bg-[#1E1F22] rounded-2xl shadow-xl border border-zinc-800 p-8 md:p-10 mb-8"
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -54,16 +55,16 @@ export default function Register() {
         
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center bg-indigo-100 dark:bg-indigo-900/50 rounded-full p-3 mb-4">
-            {/* 4. Replaced SVG with Lucide icon */}
-            <UserPlus className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+            <div className="inline-flex items-center justify-center bg-indigo-900/50 rounded-full p-3 mb-4">
+              {/* 4. Replaced SVG with Lucide icon */}
+              <UserPlus className="w-8 h-8 text-indigo-400" />
           </div>
-          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+          <h2 className="text-3xl font-extrabold text-white tracking-tight">
             Create your account
           </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-zinc-300">
+          <p className="mt-2 text-sm text-zinc-300">
             Or{' '}
-            <a href="/login" className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+            <a href="/login" className="font-medium text-indigo-400 hover:text-indigo-300">
               sign in to your account
             </a>
           </p>
@@ -74,7 +75,7 @@ export default function Register() {
           
           {/* Username Input */}
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-zinc-200">
+            <label htmlFor="username" className="block text-sm font-medium text-zinc-200">
               Username
             </label>
             <div className="mt-1 relative">
@@ -86,8 +87,7 @@ export default function Register() {
                 placeholder="your_username"
                 value={form.username} 
                 onChange={handleChange} 
-                // 5. Styled input for dark mode
-                className="appearance-none block w-full px-4 py-3 border border-gray-300 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 sm:text-sm" 
+                className="appearance-none block w-full px-4 py-3 border border-zinc-700 bg-zinc-800 text-white placeholder-zinc-400 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
               />
             </div>
           </div>
@@ -136,7 +136,7 @@ export default function Register() {
               type="submit" 
               disabled={isLoading}
               // 6. Styled button with icon and dark mode
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400 dark:disabled:bg-indigo-800 disabled:cursor-not-allowed transition"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-800 disabled:cursor-not-allowed transition"
             >
               {isLoading ? 'Creating account...' : 'Create Account'}
             </button>
@@ -155,6 +155,7 @@ export default function Register() {
           </div>
         )}
       </motion.div>
+      <Footer />
     </div>
   );
 }

@@ -86,7 +86,7 @@ const Navbar = () => {
           // Logout button is red, which works well on both themes
           <button
             onClick={handleLogout}
-            className="bg-red-500 px-4 py-1 rounded-full font-medium hover:bg-red-600 transition"
+            className="bg-black-500 px-4 py-1 rounded-full font-medium hover:bg-red-600 transition"
           >
             Logout
           </button>

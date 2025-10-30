@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { getToken, removeToken } from '../services/auth';
 import { motion } from 'framer-motion';
+import Footer from './Footer';
 import { LogOut } from 'lucide-react';
 import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer
@@ -86,12 +87,13 @@ export default function Profile() {
   ];
 
   return (
-    <motion.div
-      className="max-w-6xl mx-auto mt-12 mb-24 p-8 bg-white dark:bg-zinc-800/50 rounded-2xl shadow-lg border dark:border-zinc-700"
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
+    <>
+      <motion.div
+        className="max-w-6xl mx-auto mt-12 mb-24 p-8 bg-white dark:bg-zinc-800/50 rounded-2xl shadow-lg border dark:border-zinc-700"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
       <div className="flex justify-between items-center border-b dark:border-zinc-700 pb-4 mb-6">
         <div>
           <h2 className="text-3xl font-bold text-indigo-700 dark:text-indigo-400">
@@ -192,6 +194,8 @@ export default function Profile() {
           )}
         </motion.div>
       </div>
-    </motion.div>
+      </motion.div>
+      <Footer />
+    </>
   );
 }

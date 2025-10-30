@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { get, EXPENSE_API } from "../services/api";
 import { getToken } from "../services/auth";
 import Charts from "../components/Chart";
+import Footer from './Footer';
 
 export default function Dashboard() {
   const [expenses, setExpenses] = useState([]);
@@ -21,7 +22,8 @@ export default function Dashboard() {
   const total = expenses.reduce((a, e) => a + Number(e.amount), 0);
 
   return (
-    <div className="max-w-5xl mx-auto mt-8 p-6 bg-white rounded shadow">
+    <>
+      <div className="max-w-5xl mx-auto mt-8 p-6 bg-white rounded shadow">
       <h2 className="text-2xl font-bold mb-6">Dashboard</h2>
       <p className="mb-4 text-lg">
         Total Expenses: <b className="text-indigo-600">₹{total}</b>
@@ -32,6 +34,8 @@ export default function Dashboard() {
       ) : (
         <Charts expenses={expenses} />
       )}
-    </div>
+      </div>
+      <Footer />
+    </>
   );
 }

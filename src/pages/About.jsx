@@ -2,6 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, ArrowRight } from 'lucide-react'; // 1. Import icons
+import Footer from './Footer';
 
 // Tech stack items
 const techStack = [
@@ -133,6 +134,8 @@ Next         <h2 className="text-3xl font-bold text-zinc-900 dark:text-white
           </a>
         </div>
       </motion.section>
-This   </div>
-  );
+  
+      <Footer />
+    </div>
+  );
 }

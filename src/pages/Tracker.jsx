@@ -17,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 import Charts from "../components/Chart";
+import Footer from './Footer';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -117,10 +118,12 @@ export default function Tracker() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row justify-between gap-8 max-w-7xl mx-auto mt-10 p-4 sm:p-6">
-      {/* LEFT: Add Expense */}
+    <>
+    <div className="min-h-screen bg-[#18191B]">
+      <div className="flex flex-col md:flex-row justify-between gap-8 max-w-7xl mx-auto pt-10 p-4 sm:p-6 pb-16">
+        {/* LEFT: Add Expense */}
       <motion.div
-        className="md:w-1/3 bg-white dark:bg-zinc-800/50 rounded-xl p-5 shadow-lg border dark:border-zinc-700"
+        className="md:w-1/3 bg-[#1E1F22] rounded-xl p-5 shadow-lg border border-zinc-800"
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
@@ -136,7 +139,7 @@ export default function Tracker() {
             value={form.title}
             required
             onChange={handleChange}
-            className="border p-2 rounded dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
+            className="border border-zinc-700 bg-zinc-800 text-white placeholder-zinc-400 p-2 rounded"
           />
           <input
             name="amount"
@@ -187,8 +190,8 @@ export default function Tracker() {
         transition={{ duration: 0.5 }}
       >
         {/* Expense List */}
-        <div className="bg-white dark:bg-zinc-800/50 rounded-xl p-5 shadow-lg border dark:border-zinc-700">
-          <h2 className="text-2xl font-bold text-indigo-700 dark:text-indigo-400 mb-4 text-center">
+        <div className="bg-[#1E1F22] rounded-xl p-5 shadow-lg border border-zinc-800">
+          <h2 className="text-2xl font-bold text-indigo-400 mb-4 text-center">
             My Expenses
           </h2>
 
@@ -296,13 +299,17 @@ export default function Tracker() {
         </div>
 
         {/* Charts Section */}
-        <div className="bg-white dark:bg-zinc-800/50 rounded-xl p-5 shadow-lg border dark:border-zinc-700">
-          <h2 className="text-2xl font-bold text-indigo-700 dark:text-indigo-400 mb-4 text-center">
+        <div className="bg-[#1E1F22] rounded-xl p-5 shadow-lg border border-zinc-800">
+          <h2 className="text-2xl font-bold text-indigo-400 mb-4 text-center">
             Expense Insights
           </h2>
           <Charts expenses={expenses} />
         </div>
       </motion.div>
+      </div>
     </div>
+    <Footer />
+    </>
   );
 }
+

@@ -12,6 +12,8 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
+import Footer from './Footer';
+
 export default function LentBorrow() {
   const [entries, setEntries] = useState([]);
   const [friends, setFriends] = useState([]);
@@ -146,12 +148,13 @@ export default function LentBorrow() {
   const unsettled = entries.filter(e => e.status !== 'settled').length;
 
   return (
-    <motion.div 
-      className="max-w-4xl mx-auto mt-10 mb-24 p-6 bg-white dark:bg-zinc-800/50 rounded-2xl shadow-lg border dark:border-zinc-700"
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
+    <>
+      <motion.div 
+        className="max-w-4xl mx-auto mt-10 mb-24 p-6 bg-white dark:bg-zinc-800/50 rounded-2xl shadow-lg border dark:border-zinc-700"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
       <h2 className="text-3xl font-bold mb-6 text-indigo-700 dark:text-indigo-400 text-center">
         💸 Lent & Borrow Tracker
       </h2>
@@ -347,6 +350,8 @@ export default function LentBorrow() {
           </motion.div>
         ))}
       </div>
-    </motion.div>
+      </motion.div>
+      <Footer />
+    </>
   );
 }
