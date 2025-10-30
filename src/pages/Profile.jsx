@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+// jwt-decode may export a named `decode` depending on package version
 import { jwtDecode } from 'jwt-decode';
 import { getToken, removeToken } from '../services/auth';
 import {
@@ -14,11 +15,20 @@ export default function Profile() {
 
   useEffect(() => {
     const token = getToken();
-    if (token) {
-      const decoded = jwtDecode(token);
-      setProfile(decoded);
-      fetchData(token);
+    // Prefer stored user (saved on login). Fallback to decoding token.
+    const stored = localStorage.getItem('currentUser');
+    if (stored) {
+      setProfile(JSON.parse(stored));
+    } else if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setProfile(decoded);
+      } catch (err) {
+        console.warn('Could not decode token locally:', err.message);
+      }
     }
+
+    if (token) fetchData(token);
   }, []);
 
   const fetchData = async (token) => {
@@ -27,13 +37,13 @@ export default function Profile() {
       const expenseRes = await fetch('http://localhost:4001/api/expenses', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const expenseData = await expenseRes.json();
+      const expenseData = expenseRes.ok ? await expenseRes.json() : [];
 
       // Fetch lent/borrowed data
-      const lbRes = await fetch('http://localhost:4002/api/lentborrow', {
+      const lbRes = await fetch('http://localhost:4002/api/lendborrow', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const lbData = await lbRes.json();
+      const lbData = lbRes.ok ? await lbRes.json() : [];
 
       setExpenses(expenseData);
       setBorrowLend(lbData);
@@ -51,7 +61,7 @@ export default function Profile() {
   const expenseSummary = Object.values(
     expenses.reduce((acc, e) => {
       acc[e.category] = acc[e.category] || { name: e.category, value: 0 };
-      acc[e.category].value += e.amount;
+      acc[e.category].value += Number(e.amount || 0);
       return acc;
     }, {})
   );
@@ -60,11 +70,11 @@ export default function Profile() {
   const lendBorrowSummary = [
     {
       name: 'Lent',
-      amount: borrowLend.filter(b => b.type === 'lent').reduce((sum, b) => sum + b.amount, 0),
+      amount: borrowLend.filter(b => b.type === 'lent').reduce((sum, b) => sum + Number(b.amount || 0), 0),
     },
     {
       name: 'Borrowed',
-      amount: borrowLend.filter(b => b.type === 'borrowed').reduce((sum, b) => sum + b.amount, 0),
+      amount: borrowLend.filter(b => b.type === 'borrowed').reduce((sum, b) => sum + Number(b.amount || 0), 0),
     },
   ];
 
