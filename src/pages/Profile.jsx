@@ -1,7 +1,10 @@
+// src/pages/Profile.jsx
+
 import { useState, useEffect } from 'react';
-// jwt-decode may export a named `decode` depending on package version
 import { jwtDecode } from 'jwt-decode';
 import { getToken, removeToken } from '../services/auth';
+import { motion } from 'framer-motion';
+import { LogOut } from 'lucide-react';
 import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
@@ -15,8 +18,8 @@ export default function Profile() {
 
   useEffect(() => {
     const token = getToken();
-    // Prefer stored user (saved on login). Fallback to decoding token.
     const stored = localStorage.getItem('currentUser');
+
     if (stored) {
       setProfile(JSON.parse(stored));
     } else if (token) {
@@ -33,73 +36,89 @@ export default function Profile() {
 
   const fetchData = async (token) => {
     try {
-      // Fetch user’s expenses
       const expenseRes = await fetch('http://localhost:4001/api/expenses', {
         headers: { Authorization: `Bearer ${token}` },
       });
       const expenseData = expenseRes.ok ? await expenseRes.json() : [];
 
-      // Fetch lent/borrowed data
       const lbRes = await fetch('http://localhost:4002/api/lendborrow', {
         headers: { Authorization: `Bearer ${token}` },
       });
       const lbData = lbRes.ok ? await lbRes.json() : [];
 
-      setExpenses(expenseData);
-      setBorrowLend(lbData);
+      setExpenses(Array.isArray(expenseData) ? expenseData : []);
+      setBorrowLend(Array.isArray(lbData) ? lbData : []);
     } catch (err) {
       console.error('Error fetching data:', err);
     }
   };
 
-  function handleLogout() {
+  const handleLogout = () => {
     removeToken();
+    localStorage.removeItem('currentUser');
     window.location.href = '/login';
-  }
+  };
 
-  // Group expenses by category
+  // ✅ Group expenses by category safely
   const expenseSummary = Object.values(
     expenses.reduce((acc, e) => {
-      acc[e.category] = acc[e.category] || { name: e.category, value: 0 };
-      acc[e.category].value += Number(e.amount || 0);
+      const category = e.category || 'Uncategorized';
+      acc[category] = acc[category] || { name: category, value: 0 };
+      acc[category].value += Number(e.amount || 0);
       return acc;
     }, {})
   );
 
-  // Sum lent and borrowed
+  // ✅ Summarize lent and borrowed amounts
   const lendBorrowSummary = [
     {
       name: 'Lent',
-      amount: borrowLend.filter(b => b.type === 'lent').reduce((sum, b) => sum + Number(b.amount || 0), 0),
+      amount: borrowLend
+        .filter((b) => b.type === 'lent')
+        .reduce((sum, b) => sum + Number(b.amount || 0), 0),
     },
     {
       name: 'Borrowed',
-      amount: borrowLend.filter(b => b.type === 'borrowed').reduce((sum, b) => sum + Number(b.amount || 0), 0),
+      amount: borrowLend
+        .filter((b) => b.type === 'borrowed')
+        .reduce((sum, b) => sum + Number(b.amount || 0), 0),
     },
   ];
 
   return (
-    <div className="max-w-6xl mx-auto mt-12 mb-24 p-8 bg-white rounded-2xl shadow-lg">
-      <div className="flex justify-between items-center border-b pb-4 mb-6">
+    <motion.div
+      className="max-w-6xl mx-auto mt-12 mb-24 p-8 bg-white dark:bg-zinc-800/50 rounded-2xl shadow-lg border dark:border-zinc-700"
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="flex justify-between items-center border-b dark:border-zinc-700 pb-4 mb-6">
         <div>
-          <h2 className="text-3xl font-bold text-indigo-700">
+          <h2 className="text-3xl font-bold text-indigo-700 dark:text-indigo-400">
             Welcome, {profile?.username || 'User'} 👋
           </h2>
-          <p className="text-gray-500 text-sm">Here’s your financial overview</p>
+          <p className="text-gray-500 dark:text-zinc-400 text-sm">
+            Here’s your financial overview
+          </p>
         </div>
         <button
           onClick={handleLogout}
-          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition"
+          className="flex items-center gap-2 bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
         >
-          Logout
+          <LogOut size={18} /> Logout
         </button>
       </div>
 
-      {/* Charts */}
+      {/* Charts Section */}
       <div className="grid md:grid-cols-2 gap-8">
         {/* Expense Breakdown */}
-        <div className="bg-indigo-50 rounded-xl p-6 shadow-sm">
-          <h3 className="text-xl font-semibold text-indigo-700 mb-4 text-center">
+        <motion.div
+          className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md border dark:border-zinc-700"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <h3 className="text-xl font-semibold text-indigo-700 dark:text-indigo-400 mb-4 text-center">
             Expense Breakdown
           </h3>
           {expenseSummary.length > 0 ? (
@@ -117,38 +136,62 @@ export default function Profile() {
                   }
                 >
                   {expenseSummary.map((_, index) => (
-                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#fff',
+                    borderRadius: '8px',
+                    border: '1px solid #ddd',
+                  }}
+                />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <p className="text-gray-500 text-center mt-16">No expense data available.</p>
+            <p className="text-gray-500 dark:text-zinc-400 text-center mt-16">
+              No expense data available.
+            </p>
           )}
-        </div>
+        </motion.div>
 
         {/* Lent vs Borrowed */}
-        <div className="bg-green-50 rounded-xl p-6 shadow-sm">
-          <h3 className="text-xl font-semibold text-green-700 mb-4 text-center">
+        <motion.div
+          className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-md border dark:border-zinc-700"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <h3 className="text-xl font-semibold text-green-700 dark:text-green-400 mb-4 text-center">
             Lent vs Borrowed
           </h3>
-          {lendBorrowSummary.some(item => item.amount > 0) ? (
+          {lendBorrowSummary.some((item) => item.amount > 0) ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={lendBorrowSummary}>
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
+                <XAxis dataKey="name" tick={{ fill: '#6B7280' }} />
+                <YAxis tick={{ fill: '#6B7280' }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#fff',
+                    borderRadius: '8px',
+                    border: '1px solid #ddd',
+                  }}
+                />
                 <Legend />
                 <Bar dataKey="amount" fill="#10B981" barSize={60} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <p className="text-gray-500 text-center mt-16">No lent/borrowed data found.</p>
+            <p className="text-gray-500 dark:text-zinc-400 text-center mt-16">
+              No lent/borrowed data found.
+            </p>
           )}
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

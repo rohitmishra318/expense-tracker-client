@@ -13,17 +13,21 @@ import Dashboard from './pages/Dashboard';
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard/></ProtectedRoute>}/>
-        <Route path="/tracker" element={<ProtectedRoute><Tracker /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        <Route path="/lentborrow" element={<ProtectedRoute><LentBorrow /></ProtectedRoute>} />
-      </Routes>
+      <div className="min-h-screen bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 transition-colors duration-200">
+        <Navbar />
+        <div className="container mx-auto px-4">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard/></ProtectedRoute>}/>
+            <Route path="/tracker" element={<ProtectedRoute><Tracker /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/lentborrow" element={<ProtectedRoute><LentBorrow /></ProtectedRoute>} />
+          </Routes>
+        </div>
+      </div>
     </BrowserRouter>
   );
 }

@@ -17,6 +17,19 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Add this to your index.css file */
+:root {
+  --text-color: #374151; /* gray-700 */
+  --tooltip-bg: #ffffff;
+  --tooltip-border: #e5e7eb; /* gray-200 */
+}
+
+html.dark {
+  --text-color: #d4d4d8; /* zinc-300 */
+  --tooltip-bg: #27272a; /* zinc-800 */
+  --tooltip-border: #3f3f46; /* zinc-700 */
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
