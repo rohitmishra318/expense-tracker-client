@@ -1,10 +1,19 @@
 import { useState, useEffect } from 'react';
 import { get, post, put, _delete, LENDBORROW_API } from '../services/api';
 import { getToken } from '../services/auth';
-import { ArrowUpRight, ArrowDownLeft, CheckCircle2, Trash2, Clock } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, CheckCircle2, Trash2, Clock, Search, UserCheck2 } from "lucide-react";
+
+// For TypeScript (optional):
+// interface User {
+//   _id: string;
+//   username: string;
+//   email?: string;
+// }
 
 export default function LentBorrow() {
   const [entries, setEntries] = useState([]);
+  const [userSuggestions, setUserSuggestions] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [form, setForm] = useState({
     friendName: '',
     amount: '',
@@ -14,6 +23,35 @@ export default function LentBorrow() {
   const [message, setMessage] = useState('');
   const token = getToken();
 
+  // Search for users as typing
+  const searchUsers = async (username) => {
+    if (!username) {
+      setUserSuggestions([]);
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:4000/api/auth/users/search?username=${username}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const users = await response.json();
+        setUserSuggestions(users.filter(u => u.username.toLowerCase().includes(username.toLowerCase())));
+      }
+    } catch (err) {
+      console.error('Error searching users:', err);
+    }
+  };
+
+  // Debounce search to avoid too many requests
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (form.friendName && !selectedUser) {
+        searchUsers(form.friendName);
+      }
+    }, 300);
+    return () => clearTimeout(timeoutId);
+  }, [form.friendName]);
+
   useEffect(() => {
     async function fetchEntries() {
       const data = await get(LENDBORROW_API, token);
@@ -22,12 +60,28 @@ export default function LentBorrow() {
     fetchEntries();
   }, [token]);
 
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = e => {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+    if (name === 'friendName') {
+      setSelectedUser(null);
+    }
+  };
+
+  const selectUser = (user) => {
+    setSelectedUser(user);
+    setForm(prev => ({ ...prev, friendName: user.username }));
+    setUserSuggestions([]);
+  };
 
   const handleSubmit = async e => {
     e.preventDefault();
+    if (!selectedUser) {
+      setMessage('❌ Please select a valid user from the suggestions.');
+      return;
+    }
     setMessage('');
-    const result = await post(LENDBORROW_API, form, token);
+    const result = await post(LENDBORROW_API, { ...form, friendId: selectedUser._id }, token);
     if (result._id) {
       setEntries(entries.concat(result));
       setForm({ friendName: '', amount: '', type: 'lent', reason: '' });
@@ -79,14 +133,38 @@ export default function LentBorrow() {
       >
         <h3 className="font-semibold text-lg mb-3 text-indigo-600">Add a New Entry</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <input
-            name="friendName"
-            placeholder="Friend's Name"
-            value={form.friendName}
-            required
-            onChange={handleChange}
-            className="border p-2 rounded focus:ring-2 focus:ring-indigo-400 outline-none"
-          />
+          <div className="relative">
+            <input
+              name="friendName"
+              placeholder="Friend's Username"
+              value={form.friendName}
+              required
+              onChange={handleChange}
+              className="border p-2 rounded focus:ring-2 focus:ring-indigo-400 outline-none w-full"
+            />
+            {/* User suggestions dropdown */}
+            {userSuggestions.length > 0 && !selectedUser && (
+              <div className="absolute mt-1 w-full bg-white border rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+                {userSuggestions.map(user => (
+                  <button
+                    key={user._id}
+                    type="button"
+                    onClick={() => selectUser(user)}
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
+                  >
+                    <Search className="w-4 h-4 text-gray-500" />
+                    {user.username}
+                  </button>
+                ))}
+              </div>
+            )}
+            {selectedUser && (
+              <div className="mt-1 text-sm text-green-600 flex items-center gap-1">
+                <UserCheck2 className="w-4 h-4" />
+                User verified
+              </div>
+            )}
+          </div>
           <input
             name="amount"
             type="number"
@@ -143,7 +221,14 @@ export default function LentBorrow() {
                   <><ArrowDownLeft className="inline text-cyan-500 mr-1" /> Borrowed from {e.friendName}</>
                 )}
               </span>
-              <span className="text-gray-600">₹{e.amount}</span>
+              <span className="text-gray-600 flex items-center gap-1">
+                <span className="font-medium">₹{e.amount}</span>
+                {e.type === 'lent' ? (
+                  <span className="text-sm text-gray-500">({e.lenderName} → {e.borrowerName})</span>
+                ) : (
+                  <span className="text-sm text-gray-500">({e.borrowerName} → {e.lenderName})</span>
+                )}
+              </span>
               <span className="text-sm text-gray-500">
                 <Clock className="inline w-4 h-4 mr-1" />
                 {new Date(e.date).toLocaleDateString()}
